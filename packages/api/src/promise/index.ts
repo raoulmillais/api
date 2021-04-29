@@ -217,12 +217,6 @@ export class ApiPromise extends ApiBase<'promise'> {
       return instance.isReadyOrError;
     }
 
-    // Swallow any rejections on isReadyOrError
-    // (in Node 15.x this creates issues, when not being looked at)
-    instance.isReadyOrError.catch(() => {
-      // ignore
-    });
-
     return instance.isReady;
   }
 
@@ -256,6 +250,12 @@ export class ApiPromise extends ApiBase<'promise'> {
       super.once('ready', () => tracker.resolve(this));
       super.once('error', (e) => tracker.reject(e));
     });
+
+    if (!options || !options.throwOnConnect) {
+      // Swallow any rejections on isReadyOrError for the default (retry connecting) case
+      // (in Node 15.x this creates issues, when not being looked at)
+      this.#isReadyOrErrorPromise.catch(() => { /* ignore */ });
+    }
   }
 
   /**

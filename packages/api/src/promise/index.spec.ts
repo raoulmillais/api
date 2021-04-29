@@ -87,7 +87,7 @@ describe('ApiPromise', (): void => {
     it('Create API instance will error on failure to await ready', async (): Promise<void> => {
       class ErrorApiPromise extends ApiPromise {
         constructor () {
-          super({ provider });
+          super({ provider, throwOnConnect: true });
         }
 
         protected _loadMeta (): Promise<boolean> {
